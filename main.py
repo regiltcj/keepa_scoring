@@ -110,7 +110,7 @@ else:
     final_scores = pd.merge(trend_scores, periodic_scores, on="brand", how="inner", validate="one_to_one")
     final_scores = pd.merge(final_scores, snapshot_scores, on="brand", how="inner", validate="one_to_one")
     logger.info("Writing final score to big query tables")
-    if brand != " ":
+    if brand != "":
         delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = '" + brand + "'"
         bq_client = bigquery.Client.from_service_account_json(credential_json)
         query_job = bq_client.query(delete_brand_qs)
