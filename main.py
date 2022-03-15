@@ -48,6 +48,7 @@ else:
 
     credentials = service_account.Credentials.from_service_account_file(credential_json)
     project_id = credentials.project_id
+    bq_client = bigquery.Client.from_service_account_json(credential_json)
 
     if brand != " ":
         logger.info(f"Performing analysis for the '{brand}' brand '{schema}' of '{project_id}' project")
@@ -64,13 +65,13 @@ else:
     product_offer_snapshots_qs = "SELECT * FROM " + schema + ".product_offer_snapshots"
     product_snapshots_qs = "SELECT * FROM " + schema + ".product_snapshots"
 
-    bi_brand_metrics_daily = pd.read_gbq(bi_brand_metrics_daily_qs, project_id=project_id, credentials=credentials)
-    bi_brand_metrics_snapshot = pd.read_gbq(bi_brand_metrics_snapshot_qs, project_id=project_id, credentials=credentials)
-    bi_brand_segmentation = pd.read_gbq(bi_brand_segmentation_qs, project_id=project_id, credentials=credentials)
-    bi_product_metrics_daily = pd.read_gbq(bi_product_metrics_daily_qs, project_id=project_id, credentials=credentials)
-    products = pd.read_gbq(products_qs, project_id=project_id, credentials=credentials)
-    product_offer_snapshots = pd.read_gbq(product_offer_snapshots_qs, project_id=project_id, credentials=credentials)
-    product_snapshots = pd.read_gbq(product_snapshots_qs, project_id=project_id, credentials=credentials)
+    bi_brand_metrics_daily = bq_client.query(bi_brand_metrics_daily_qs).result().to_dataframe()
+    bi_brand_metrics_snapshot = bq_client.query(bi_brand_metrics_snapshot_qs).result().to_dataframe()
+    bi_brand_segmentation = bq_client.query(bi_brand_segmentation_qs).result().to_dataframe()
+    bi_product_metrics_daily = bq_client.query(bi_product_metrics_daily_qs).result().to_dataframe()
+    products = bq_client.query(products_qs).result().to_dataframe()
+    product_offer_snapshots = bq_client.query(product_offer_snapshots_qs).result().to_dataframe()
+    product_snapshots = bq_client.query(product_snapshots_qs).result().to_dataframe()
 
     # source_path = "./datasets/"
     #
@@ -111,7 +112,6 @@ else:
     logger.info("Writing final score to big query tables")
     if brand != " ":
         delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = " + brand + "'"
-        bq_client = bigquery.Client.from_service_account_json(credential_json)
         query_job = bq_client.query(delete_brand_qs)
         final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append")
     else:
