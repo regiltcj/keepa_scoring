@@ -67,13 +67,20 @@ def get_consistency_score(df, field_name, is_threshold):
 
 
 # Compute the trend score
-def compute_trend_score(df, field_name, agg_field):
+def compute_trend_score(df, field_name, agg_field, brand_list):
     scaled_field_name = "scaled_" + field_name
     cols = ["brand", agg_field, "sample_date", field_name, scaled_field_name, "week_number"]
     df_filtered = filter_brand_metrics_daily(df, field_name, agg_field, cols, 0.9, False)
 
-    # Trend score
-    score = df_filtered.groupby(by=["brand", agg_field]).apply(get_growth_rate, scaled_field_name).reset_index()
+    df_filtered = df_filtered.loc[df_filtered["brand"].isin(brand_list), :]
+
+    if df_filtered.shape[0] == 0:
+        score = pd.DataFrame(columns=["brand", agg_field, 0])
+    else:
+        # Trend score
+        score = df_filtered.groupby(by=["brand", agg_field])[["sample_date", scaled_field_name]].apply(get_growth_rate,
+                                                                                                       scaled_field_name
+                                                                                                       ).reset_index()
     weightage = category_weight(df_filtered, field_name, agg_field)
     weighted_score = pd.merge(weightage, score, on=["brand", agg_field], how="inner")
     weighted_score["weighted_score"] = weighted_score[0] * weighted_score["weightage"]
@@ -81,14 +88,19 @@ def compute_trend_score(df, field_name, agg_field):
     trend_score.rename(columns={"weighted_score": "trend_score"}, inplace=True)
 
     # Consistency score
-    weekly_growth = df_filtered.groupby(by=["brand", agg_field, "week_number"]).apply(
-        get_growth_rate, scaled_field_name).reset_index()
-    weekly_score = weekly_growth.groupby(by=["brand", agg_field]).apply(get_consistency_score, 0, False).reset_index()
+    if df_filtered.shape[0] == 0:
+        weekly_score = pd.DataFrame(columns=["brand", agg_field, 0])
+    else:
+        weekly_growth = df_filtered.groupby(by=["brand", agg_field, "week_number"])[["sample_date",
+                                                                                     scaled_field_name]].apply(
+            get_growth_rate, scaled_field_name).reset_index()
+        weekly_score = weekly_growth.groupby(by=["brand", agg_field]).apply(get_consistency_score, 0, False
+                                                                            ).reset_index()
     weighted_weekly_score = pd.merge(weightage, weekly_score, on=["brand", agg_field], how="inner")
     weighted_weekly_score["weighted_weekly_score"] = weighted_weekly_score[0] * weighted_weekly_score["weightage"]
     consistency_score = weighted_weekly_score.groupby(by="brand")["weighted_weekly_score"].sum().reset_index()
     consistency_score.rename(columns={"weighted_weekly_score": "consistency_score"}, inplace=True)
 
     score = pd.merge(trend_score, consistency_score, on="brand", how="inner", validate="one_to_one")
-    score["trend_"+field_name] = score["trend_score"] + score["consistency_score"]
-    return score.loc[:, ["brand", "trend_"+field_name]]
+    score["trend_" + field_name] = score["trend_score"] + score["consistency_score"]
+    return score.loc[:, ["brand", "trend_" + field_name]]

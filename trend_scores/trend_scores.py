@@ -8,6 +8,8 @@ logger = logging.getLogger()
 
 def compute_trend_scores(bi_brand_metrics_daily, bi_product_metrics_daily, products, brands):
 
+    brand_list = list(brands["brand"])
+
     product_brand_daily = pd.merge(bi_product_metrics_daily, products, on="product_id", how="inner",
                                    validate="many_to_one")
 
@@ -33,13 +35,13 @@ def compute_trend_scores(bi_brand_metrics_daily, bi_product_metrics_daily, produ
 
     for col in trend_cols:
         logger.info("Evaluating trend analysis score for " + col)
-        trend_col_score = compute_trend_score(bi_brand_metrics_daily, col, "category_id")
+        trend_col_score = compute_trend_score(bi_brand_metrics_daily, col, "category_id", brand_list)
         brands = pd.merge(brands, trend_col_score, on="brand", how="left",
                           validate="one_to_one")
         logger.info("Computed trend analysis score for " + col)
 
     logger.info("Evaluating trend analysis score for pricing")
-    trend_col_score = compute_trend_score(product_brand_daily, "new_price", "product_id")
+    trend_col_score = compute_trend_score(product_brand_daily, "new_price", "product_id", brand_list)
     brands = pd.merge(brands, trend_col_score, on="brand", how="left", validate="one_to_one")
     logger.info("Computed trend analysis score for pricing")
     logger.info("Completed evaluation of trend metrics")
