@@ -111,9 +111,11 @@ else:
     final_scores = pd.merge(final_scores, snapshot_scores, on="brand", how="inner", validate="one_to_one")
     logger.info("Writing final score to big query tables")
     if brand != " ":
-        delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = " + brand + "'"
+        delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = '" + brand + "'"
+        bq_client = bigquery.Client.from_service_account_json(credential_json)
         query_job = bq_client.query(delete_brand_qs)
+        query_job.result()
         final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append")
     else:
-        final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="replace")
+        final_scores.to_gbq(schema + ".bi_brands_scores", project_id=project_id, if_exists="replace")
     logger.info("Execution complete")
