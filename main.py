@@ -111,7 +111,7 @@ else:
     logger.info("Writing final score to big query tables")
     if brand != " ":
         delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = " + brand + "'"
-        bq_client = bigquery.Client()
+        bq_client = bigquery.Client.from_service_account_json(credential_json)
         query_job = bq_client.query(delete_brand_qs)
         final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append")
     else:
