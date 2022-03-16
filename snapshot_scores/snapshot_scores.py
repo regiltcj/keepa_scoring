@@ -7,8 +7,7 @@ from snapshot_scores.utils import get_number_of_sellers, get_snapshot_pricing
 logger = logging.getLogger()
 
 
-def compute_snapshot_scores(bi_product_metrics_daily, bi_brand_metrics_snapshot, bi_brand_segmentation, products,
-                            product_offer_snapshots, brands):
+def compute_snapshot_scores(brands):
 
     scaler = MinMaxScaler()
     bi_brand_metrics_snapshot = pd.read_csv("./datasets/bi_brand_metrics_snapshot.csv")

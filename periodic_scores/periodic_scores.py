@@ -42,25 +42,25 @@ def compute_periodic_scores(brands):
     logger.info("Computed category_concentration score")
     
     
-    bi_product_metrics_daily = pd.read_csv("./datasets/bi_product_metrics_daily.csv")
-    products = pd.read_csv("./datasets/products.csv")
+    # bi_product_metrics_daily = pd.read_csv("./datasets/bi_product_metrics_daily.csv")
+    # products = pd.read_csv("./datasets/products.csv")
     
-    product_brand_daily = pd.merge(bi_product_metrics_daily, products, on="product_id", how="inner",
-                                   validate="many_to_one")
+    # product_brand_daily = pd.merge(bi_product_metrics_daily, products, on="product_id", how="inner",
+                                   # validate="many_to_one")
     
-    del bi_product_metrics_daily
-    del products
+    # del bi_product_metrics_daily
+    # del products
     
-    product_revenue_con = get_revenue_concentration(product_brand_daily, "daily_sales", "product_id")
-    product_total_con = pd.merge(product_con, product_revenue_con, on="brand", how="inner", validate="one_to_one")
-    del product_con
-    del product_revenue_con
-    product_total_con["periodic_product_concentration"] = product_total_con["products_con"] * product_total_con[
-                                                            "product_id_daily_sales_con"]
-    brands = pd.merge(brands, product_total_con.loc[:, ["brand", "periodic_product_concentration"]], on="brand",
-                      how="left", validate="one_to_one")
-    del product_total_con
-    logger.info("Computed product_concentration score")
+    # product_revenue_con = get_revenue_concentration(product_brand_daily, "daily_sales", "product_id")
+    # product_total_con = pd.merge(product_con, product_revenue_con, on="brand", how="inner", validate="one_to_one")
+    # del product_con
+    # del product_revenue_con
+    # product_total_con["periodic_product_concentration"] = product_total_con["products_con"] * product_total_con[
+                                                            # "product_id_daily_sales_con"]
+    # brands = pd.merge(brands, product_total_con.loc[:, ["brand", "periodic_product_concentration"]], on="brand",
+                      # how="left", validate="one_to_one")
+    # del product_total_con
+    # logger.info("Computed product_concentration score")
     
     
     logger.info("Evaluating out_of_stock score")

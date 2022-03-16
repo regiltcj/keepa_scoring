@@ -67,18 +67,25 @@ else:
 
     df = bq_client.query(bi_brand_metrics_daily_qs).result().to_dataframe()
     df.to_csv("./datasets/bi_brand_metrics_daily.csv")
+    print("Wrote bi_brand_metrics_daily_qs")
     df = bq_client.query(bi_brand_metrics_snapshot_qs).result().to_dataframe()
     df.to_csv("./datasets/bi_brand_metrics_snapshot.csv")
+    print("Wrote bi_brand_metrics_snapshot_qs")
     df = bq_client.query(bi_brand_segmentation_qs).result().to_dataframe()
     df.to_csv("./datasets/bi_brand_segmentation.csv")
+    print("Wrote bi_brand_segmentation_qs")
     df = bq_client.query(bi_product_metrics_daily_qs).result().to_dataframe()
     df.to_csv("./datasets/bi_product_metrics_daily.csv")
+    print("Wrote bi_product_metrics_daily_qs")
     df = bq_client.query(products_qs).result().to_dataframe()
     df.to_csv("./datasets/products.csv")
+    print("Wrote products_qs")
     df = bq_client.query(product_offer_snapshots_qs).result().to_dataframe()
     df.to_csv("./datasets/product_offer_snapshots.csv")
+    print("Wrote product_offer_snapshots_qs")
     df = bq_client.query(product_snapshots_qs).result().to_dataframe()
     df.to_csv("./datasets/product_snapshots.csv")
+    print("Wrote product_snapshots_qs")
 
     # Creating a dataframe of all the unique brands for which we have the sales data for
     products = pd.read_csv("./datasets/products.csv")
@@ -103,11 +110,11 @@ else:
     final_scores = pd.merge(final_scores, snapshot_scores, on="brand", how="inner", validate="one_to_one")
     logger.info("Writing final score to big query tables")
     if brand != "":
-        delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = '" + brand + "'"
-        bq_client = bigquery.Client.from_service_account_json(credential_json)
-        query_job = bq_client.query(delete_brand_qs)
-        query_job.result()
-        final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append")
+        #delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = '" + brand + "'"
+        #bq_client = bigquery.Client.from_service_account_json(credential_json)
+        #query_job = bq_client.query(delete_brand_qs)
+        #query_job.result()
+        final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append", credentials=credentials)
     else:
-        final_scores.to_gbq(schema + ".bi_brands_scores", project_id=project_id, if_exists="replace")
+        final_scores.to_gbq(schema + ".bi_brands_scores", project_id=project_id, if_exists="replace", credentials=credentials)
     logger.info("Execution complete")
