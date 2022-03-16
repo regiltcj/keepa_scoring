@@ -45,25 +45,29 @@ These metrics evaluate the brands based on
 4. Product_Concenteration
 
 	This score consist of two parts
-		- product concentration - 
-			This is a measure of number of products a brands has. Higher the number of products, better the score
-			We measure the ratio of mean number of products a brand has in a timeframe to the median of mean number of products of all the brands in that time frame
-		- revenue concenteration
-			This measures how the total daily_sales of the brand is distributed across its products. If its uniformly distributed, higher would be the score.
-			Uniformity is measured based on the entropy with a little modification such that if the brand has only one product, it is given higher entropy
-			Entropy is then linearly inversed such that lower entropy (uniform distribution) has a higher score 
+	- product concentration
+	
+		This is a measure of number of products a brands has. Higher the number of products, better the score
+		We measure the ratio of mean number of products a brand has in a timeframe to the median of mean number of products of all the brands in that time frame
+	- revenue concenteration
+	
+		This measures how the total daily_sales of the brand is distributed across its products. If its uniformly distributed, higher would be the score.
+		Uniformity is measured based on the entropy with a little modification such that if the brand has only one product, it is given higher entropy
+		Entropy is then linearly inversed such that lower entropy (uniform distribution) has a higher score 
 	Final score is obtained by multiplying product concenteration and revenue concentration
 
 5. Category_Concenteration
 
 	This score also consist of two parts
-		- category concentration - 
-			This is a measure of number of category a brands sells product in. Higher the number of categories, better the score
-			We measure the ratio of mean number of categories a brand has in a timeframe to the median of mean number of categories of all the brands in that time frame
-		- revenue concenteration
-			This measures how the total daily_sales of the brand is distributed across its categories. If its uniformly distributed, higher would be the score.
-			Uniformity is measured based on the entropy with a little modification such that if the brand sells only in one category, it is given higher entropy
-			Entropy is then linearly inversed such that lower entropy (uniform distribution) has a higher score 
+	- category concentration
+	
+		This is a measure of number of category a brands sells product in. Higher the number of categories, better the score
+		We measure the ratio of mean number of categories a brand has in a timeframe to the median of mean number of categories of all the brands in that time frame
+	- revenue concenteration
+
+		This measures how the total daily_sales of the brand is distributed across its categories. If its uniformly distributed, higher would be the score.
+		Uniformity is measured based on the entropy with a little modification such that if the brand sells only in one category, it is given higher entropy
+		Entropy is then linearly inversed such that lower entropy (uniform distribution) has a higher score 
 	Final score is obtained by multiplying category concenteration and revenue concentration
 
 Snapshot scores
