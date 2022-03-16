@@ -65,29 +65,23 @@ else:
     product_offer_snapshots_qs = "SELECT * FROM " + schema + ".product_offer_snapshots"
     product_snapshots_qs = "SELECT * FROM " + schema + ".product_snapshots"
 
-    bi_brand_metrics_daily = bq_client.query(bi_brand_metrics_daily_qs).result().to_dataframe()
-    bi_brand_metrics_snapshot = bq_client.query(bi_brand_metrics_snapshot_qs).result().to_dataframe()
-    bi_brand_segmentation = bq_client.query(bi_brand_segmentation_qs).result().to_dataframe()
-    bi_product_metrics_daily = bq_client.query(bi_product_metrics_daily_qs).result().to_dataframe()
-    products = bq_client.query(products_qs).result().to_dataframe()
-    product_offer_snapshots = bq_client.query(product_offer_snapshots_qs).result().to_dataframe()
-    product_snapshots = bq_client.query(product_snapshots_qs).result().to_dataframe()
-
-    # source_path = "./datasets/"
-    #
-    # bi_brand_metrics_daily = pd.read_csv(source_path + "bi_brand_metrics_daily.csv")
-    # bi_brand_metrics_snapshot = pd.read_csv(source_path + "bi_brand_metrics_snapshot.csv")
-    # bi_brand_segmentation = pd.read_csv(source_path + "bi_brand_segmentation.csv")
-    # bi_product_metrics_daily = pd.read_csv(source_path + "bi_product_metrics_daily.csv")
-    # products = pd.read_csv(source_path + "products.csv")
-    # product_offer_snapshots = pd.read_csv(source_path + "product_offer_snapshots.csv")
-    # product_snapshots = pd.read_csv(source_path + "product_snapshots.csv")
-
-    # Converting numeric datatype to float
-    bi_brand_metrics_daily["daily_items"] = bi_brand_metrics_daily["daily_items"].astype("float")
-    bi_brand_metrics_daily["daily_items_share"] = bi_brand_metrics_daily["daily_items_share"].astype("float")
+    df = bq_client.query(bi_brand_metrics_daily_qs).result().to_dataframe()
+    df.to_csv("./datasets/bi_brand_metrics_daily.csv")
+    df = bq_client.query(bi_brand_metrics_snapshot_qs).result().to_dataframe()
+    df.to_csv("./datasets/bi_brand_metrics_snapshot.csv")
+    df = bq_client.query(bi_brand_segmentation_qs).result().to_dataframe()
+    df.to_csv("./datasets/bi_brand_segmentation.csv")
+    df = bq_client.query(bi_product_metrics_daily_qs).result().to_dataframe()
+    df.to_csv("./datasets/bi_product_metrics_daily.csv")
+    df = bq_client.query(products_qs).result().to_dataframe()
+    df.to_csv("./datasets/products.csv")
+    df = bq_client.query(product_offer_snapshots_qs).result().to_dataframe()
+    df.to_csv("./datasets/product_offer_snapshots.csv")
+    df = bq_client.query(product_snapshots_qs).result().to_dataframe()
+    df.to_csv("./datasets/product_snapshots.csv")
 
     # Creating a dataframe of all the unique brands for which we have the sales data for
+    products = pd.read_csv("./datasets/products.csv")
     if brand == "":
         brands = pd.DataFrame(products.loc[~products["brand"].isna(), "brand"])
         brands.drop_duplicates(ignore_index=True, inplace=True)
@@ -99,13 +93,11 @@ else:
         brands.drop_duplicates(ignore_index=True, inplace=True)
 
     logger.info("Computing trend metrics")
-    trend_scores = compute_trend_scores(bi_brand_metrics_daily, bi_product_metrics_daily, products, brands)
+    trend_scores = compute_trend_scores(brands)
     logger.info("Computing periodic metrics")
-    periodic_scores = compute_periodic_scores(bi_brand_metrics_daily, bi_product_metrics_daily, product_snapshots,
-                                              products, brands)
+    periodic_scores = compute_periodic_scores(brands)
     logger.info("Computing snapshot metrics")
-    snapshot_scores = compute_snapshot_scores(bi_product_metrics_daily, bi_brand_metrics_snapshot,
-                                              bi_brand_segmentation, products, product_offer_snapshots, brands)
+    snapshot_scores = compute_snapshot_scores(brands)
 
     final_scores = pd.merge(trend_scores, periodic_scores, on="brand", how="inner", validate="one_to_one")
     final_scores = pd.merge(final_scores, snapshot_scores, on="brand", how="inner", validate="one_to_one")
