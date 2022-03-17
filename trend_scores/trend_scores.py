@@ -32,29 +32,31 @@ def compute_trend_scores(brands):
         trend_col_score = compute_trend_score(bi_brand_metrics_daily, col, "category_id", brand_list)
         brands = pd.merge(brands, trend_col_score, on="brand", how="left",
                           validate="one_to_one")
+        print("Computed trend analysis score for " + col)
         logger.info("Computed trend analysis score for " + col)
 
     del bi_brand_metrics_daily
     
-    # logger.info("Evaluating trend analysis score for pricing")
-    # bi_product_metrics_daily = pd.read_csv("./datasets/bi_product_metrics_daily.csv")
-    # products = pd.read_csv("./datasets/products.csv")
+    logger.info("Evaluating trend analysis score for pricing")
+    bi_product_metrics_daily = pd.read_csv("./datasets/bi_product_metrics_daily.csv")
+    products = pd.read_csv("./datasets/products.csv")
     
-    # product_brand_daily = pd.merge(bi_product_metrics_daily, products, on="product_id", how="inner",
-                                   # validate="many_to_one")
+    bi_product_metrics_daily = pd.merge(bi_product_metrics_daily, products, on="product_id", how="inner",
+                                    validate="many_to_one")
     
     # del bi_product_metrics_daily
-    ## Converting the sample_date to datetime
-    # product_brand_daily.loc[:, "sample_date"] = pd.to_datetime(product_brand_daily["sample_date"])
-    #product_brand_daily.loc[:, "week_number"] = product_brand_daily["sample_date"].dt.isocalendar().week
+    # Converting the sample_date to datetime
+    bi_product_metrics_daily.loc[:, "sample_date"] = pd.to_datetime(bi_product_metrics_daily["sample_date"])
+    bi_product_metrics_daily.loc[:, "week_number"] = bi_product_metrics_daily["sample_date"].dt.isocalendar().week
     
-    # logger.info("Scaling bi_brand_metrics_daily dataset for trend analysis")
-    # product_brand_daily["scaled_new_price"] = product_brand_daily.groupby(by=["brand", "product_id"])[
-        # "new_price"].transform(scale_data, scaler)
-    # logger.info("Scaling completed for bi_product_metrics_daily")
+    logger.info("Scaling bi_brand_metrics_daily dataset for trend analysis")
+    bi_product_metrics_daily["scaled_new_price"] = bi_product_metrics_daily.groupby(by=["brand", "product_id"])[
+         "new_price"].transform(scale_data, scaler)
+    logger.info("Scaling completed for bi_product_metrics_daily")
     
-    # trend_col_score = compute_trend_score(product_brand_daily, "new_price", "product_id", brand_list)
-    # brands = pd.merge(brands, trend_col_score, on="brand", how="left", validate="one_to_one")
-    #logger.info("Computed trend analysis score for pricing")
-    # logger.info("Completed evaluation of trend metrics")
+    trend_col_score = compute_trend_score(bi_product_metrics_daily, "new_price", "product_id", brand_list)
+    del bi_product_metrics_daily
+    brands = pd.merge(brands, trend_col_score, on="brand", how="left", validate="one_to_one")
+    logger.info("Computed trend analysis score for pricing")
+    logger.info("Completed evaluation of trend metrics")
     return brands
