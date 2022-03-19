@@ -39,13 +39,9 @@ def get_competition_entropy(df, field_name, agg_field):
     return cat_entropy
 
 
-def get_out_of_pct_score(products, products_snapshot):
+def get_out_of_pct_score(out_of_stocks):
     # out_of_stock for the whole time frame.
     # There are null values in the joined table, but it is removed while calculating the mean out_of_stock_pct
-    out_of_stocks = pd.merge(products_snapshot, products, on="product_id", how="inner", validate="one_to_one").loc[:, [
-                                                                                                  "product_id",
-                                                                                                  "brand",
-                                                                                                  "out_of_stock_pct"]]
 
     # Replacing -1 with NaN since -1 indicate missing value
     out_of_stocks["out_of_stock_pct"].replace(-1, np.nan, inplace=True)
@@ -102,6 +98,5 @@ def get_revenue_concentration(df, field_name, agg_field):
     scaler = MinMaxScaler()
     entropy[agg_field+"_"+field_name+"_con"] = scaler.fit_transform(entropy[[0]])
     entropy[agg_field+"_"+field_name+"_con"] = entropy[agg_field+"_"+field_name+"_con"].map(lambda x: 1 - x)
-    # print(entropy)
     entropy.drop(columns=[0], inplace=True)
     return entropy
