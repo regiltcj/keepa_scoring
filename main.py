@@ -9,7 +9,7 @@ from trend_scores.trend_scores import compute_trend_scores
 from periodic_scores.periodic_scores import compute_periodic_scores
 from snapshot_scores.snapshot_scores import compute_snapshot_scores
 
-
+# CS_1_1069664_151121
 def print_incorrect_usage_message(message):
     logger.error(message)
     print(message)
@@ -121,13 +121,17 @@ else:
             logger.error(f"Given brand name ({brand}) does not exists")
             exit()
     brands.drop_duplicates(ignore_index=True, inplace=True)
+    brands.drop(columns="Unnamed: 0", inplace=True)
 
     logger.info("Computing trend metrics")
     trend_scores = compute_trend_scores(brands)
+    trend_scores.to_csv("./scores/trend_scores.csv")
     logger.info("Computing periodic metrics")
     periodic_scores = compute_periodic_scores(brands)
+    periodic_scores.to_csv("./scores/periodic_scores.csv")
     logger.info("Computing snapshot metrics")
     snapshot_scores = compute_snapshot_scores(brands)
+    snapshot_scores.to_csv("./scores/snapshot_scores.csv")
 
     final_scores = pd.merge(trend_scores, periodic_scores, on="brand", how="inner", validate="one_to_one")
     final_scores = pd.merge(final_scores, snapshot_scores, on="brand", how="inner", validate="one_to_one")

@@ -78,7 +78,7 @@ def compute_snapshot_scores(brands):
     product_avg_sales = pd.read_csv("./datasets/product_avg_sales.csv")
 
     pricing = get_weighted_value(product_sellers_price_ratio, product_avg_sales, "price_ratio", "daily_sales")
-    number_of_sellers.rename(columns={0: "snapshot_price_ratio"}, inplace=True)
+    pricing.rename(columns={0: "snapshot_price_ratio"}, inplace=True)
     brands = pd.merge(brands, pricing, on="brand", how="left", validate="one_to_one")
     logger.info("Computed price_ratio score")
 
