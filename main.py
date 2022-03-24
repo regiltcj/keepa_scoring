@@ -139,15 +139,15 @@ else:
     final_scores.to_csv("./scores/scores_tbd.csv")
     if brand != "":
         try:
-            delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_score WHERE brand = '" + brand + "'"
+            delete_brand_qs = "DELETE FROM " + schema + ".bi_brand_scores WHERE brand = '" + brand + "'"
             query_job = bq_client.query(delete_brand_qs)
             query_job.result()
             # Check the count of query job and change the log accordingly
-            logger.info("Updating the scores for the brand " + brand + " in bi_brand_score table")
+            logger.info("Updating the scores for the brand " + brand + " in bi_brand_scores table")
         except NotFound as e:
-            logger.info("Target table bi_brand_score does not exist and hence creating the table")
+            logger.info("Target table bi_brand_scores does not exist and hence creating the table")
 
-        final_scores.to_gbq(schema + ".bi_brand_score", project_id=project_id, if_exists="append",
+        final_scores.to_gbq(schema + ".bi_brand_scores", project_id=project_id, if_exists="append",
                             credentials=credentials)
     else:
         final_scores.to_gbq(schema + ".bi_brands_scores", project_id=project_id, if_exists="replace",
