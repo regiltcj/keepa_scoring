@@ -94,7 +94,7 @@ def compute_trend_score(df, field_name, agg_field, brand_list):
         weekly_growth = df_filtered.groupby(by=["brand", agg_field, "week_number"])[["sample_date",
                                                                                      scaled_field_name]].apply(
             get_growth_rate, scaled_field_name).reset_index()
-        weekly_score = weekly_growth.groupby(by=["brand", agg_field]).apply(get_consistency_score, 0, False
+        weekly_score = weekly_growth.groupby(by=["brand", agg_field]).apply(get_consistency_score, 0, True
                                                                             ).reset_index()
     weighted_weekly_score = pd.merge(weightage, weekly_score, on=["brand", agg_field], how="inner")
     weighted_weekly_score["weighted_weekly_score"] = weighted_weekly_score[0] * weighted_weekly_score["weightage"]
