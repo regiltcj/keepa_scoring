@@ -72,3 +72,21 @@ These metrics evaluate the brands based on
 
 Snapshot scores
 ==================================
+1. Number of Sellers
+
+	Here we first identify the mean number of sellers for each brand as the weighted sum of number of sellers for each product (wieghed based on the number of items sold). Then we find how far the number of sellers for each brand is from the mean as a measure of standard deviation. Scores are given such that farther the brand is from the mean, lower the score is.
+2. Seller Reviews Count
+
+	Average seller review count for each brand from bi_brand_metrics_snapshot table
+3. Seller Reviews Score
+
+	Average seller review score for each brand from bi_brand_metrics_snapshot table
+4. Product Reviews Count
+
+	Average product review count for each brand from bi_brand_segmentation table
+5. Product Reviews Score
+
+	Average product review score for each brand from bi_brand_segmentation table
+6. Price Ratio
+
+	Measures the ratio of min to max price of each product of a brand and calculate a wiehgted sum (weighed based on the sales) to arrive at the score for the brand
