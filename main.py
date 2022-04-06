@@ -10,10 +10,18 @@ from periodic_scores.periodic_scores import compute_periodic_scores
 from snapshot_scores.snapshot_scores import compute_snapshot_scores
 
 # CS_1_1069664_151121
+
+
 def print_incorrect_usage_message(message):
     logger.error(message)
     print(message)
     print("Usage: ")
+    print("python ./main.py <credential.json> <schema_name> <brand_analysis> <brand_name>")
+    print("credential.json - JSON file that contain the credentials to connect to Google Cloud")
+    print("schema_name - Schema to analyze")
+    print("brand_analysis - Whether to perform the analysis for single brand for all the brands. "
+          "Possible values - y, n, yes, no")
+    print("brand_name - Name of the brand if analysis is to be done for single brand")
 
 
 logging.basicConfig(filename="log.log", filemode="w", format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
